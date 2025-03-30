@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quản lý sản phẩm</title>
+    <link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <h1>Quản lý sản phẩm</h1>
+    
+    <!-- Form thêm sản phẩm -->
+    <form action="/insert" method="POST" enctype="multipart/form-data">
+        <!-- Không nhập maSanPham nữa -->
+        <input type="text" name="tenSanPham" placeholder="Tên sản phẩm" required>
+        <input type="number" name="soLuong" placeholder="Số lượng" required>
+        <input type="file" name="hinhAnh" accept="image/*">
+        <button type="submit">Thêm</button>
+    </form>
+
+    <!-- Danh sách sản phẩm -->
+<form id="productForm" action="/delete" method="POST">
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>MÃ SẢN PHẨM</th>
+                    <th>UUID</th>
+                    <th>TÊN SẢN PHẨM</th>
+                    <th>SỐ LƯỢNG</th>
+                    <th>HÌNH ẢNH</th>
+                    <th>HÀNH ĐỘNG</th>
+                    <th><input type="checkbox" id="selectAll"></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <% items.forEach((item, index) => { %>
+                    <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= item.maSanPham %></td>
+                        <td><%= item.uuid || 'Không có' %></td>
+                        <td><%= item.tenSanPham %></td>
+                        <td><%= item.soLuong %></td>
+                        <td>
+                            <% if (item.hinhAnh) { %>
+                                <img src="<%= item.hinhAnh %>" alt="Hình ảnh" style="max-width: 100px;">
+                            <% } else { %>
+                                Không có ảnh
+                            <% } %>
+                        </td>
+                        <td>
+                            <button type="button" onclick="editItem('<%= item.maSanPham %>', '<%= item.tenSanPham %>', '<%= item.soLuong %>', '<%= item.hinhAnh || '' %>')">Sửa</button>
+                        </td>
+                        <td><input type="checkbox" name="maSanPham" value="<%= item.maSanPham %>"></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <button type="submit">Xóa đã chọn</button>
+</form>
+
+
+    <!-- Form sửa sản phẩm -->
+    <div id="editForm" style="display: none; margin-top: 20px;">
+        <h2>Sửa sản phẩm</h2>
+        <form action="/update" method="POST" enctype="multipart/form-data">
+            <input type="text" name="maSanPham" id="editMaSanPham" readonly>
+            <input type="text" name="tenSanPham" id="editTenSanPham" required>
+            <input type="number" name="soLuong" id="editSoLuong" required>
+            <input type="file" name="hinhAnh" accept="image/*">
+            <input type="hidden" name="currentHinhAnh" id="currentHinhAnh">
+            <button type="submit">Lưu</button>
+            <button type="button" onclick="cancelEdit()">Hủy</button>
+        </form>
+    </div>
+
+    <script>
+        // Chọn tất cả checkbox
+        document.getElementById('selectAll').addEventListener('change', function() {
+            const checkboxes = document.getElementsByName('maSanPham');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+        });
+
+        // Hiển thị form sửa
+        function editItem(maSanPham, tenSanPham, soLuong, hinhAnh) {
+            document.getElementById('editMaSanPham').value = maSanPham;
+            document.getElementById('editTenSanPham').value = tenSanPham;
+            document.getElementById('editSoLuong').value = soLuong;
+            document.getElementById('currentHinhAnh').value = hinhAnh;
+            document.getElementById('editForm').style.display = 'block';
+        }
+
+        // Hủy sửa
+        function cancelEdit() {
+            document.getElementById('editForm').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
